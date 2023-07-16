@@ -10,6 +10,11 @@ npm-debug.*
 *.orig.*
 web-build/
 FirebaseConfig.js
+babel.config.js
+app.json
+metro.config.js
+package-lock.json
+package.json
 
 # macOS
 .DS_Store
