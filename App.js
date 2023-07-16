@@ -9,7 +9,7 @@ import Account from "./Views/Account";
 const Stack = createNativeStackNavigator();
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLogged] = useState(false);
 
   useEffect(() => {
     const checkLoginStatus = () => {
