@@ -1,44 +1,41 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button } from "react-native";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AdditionalInfoEmployer from "./Views/AdditionalInfoEmployer";
-import AdditionalInfoCustomer from "./Views/AdditionalInfoCustomer";
-import Selection from "./Views/Selection";
-import RegistrationView from "./Views/RegistrationView";
+import { onAuthStateChanged } from "firebase/auth";
+import { FIREBASE_AUTH } from "../FirebaseConfig";
 import LoginView from "./Views/LoginView";
 import Account from "./Views/Account";
 
 const Stack = createNativeStackNavigator();
 
 function App() {
-  return (
-    <NavigationContainer style={styles.container}>
-      <Stack.Navigator initialRouteName="Registration">
-        <Stack.Screen name="Registration" component={RegistrationView} />
-        <Stack.Screen name="SignIn" component={LoginView} />
-        <Stack.Screen name="Select" component={Selection} />
-        <Stack.Screen name="Account" component={Account} />
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-        <Stack.Screen
-          name="AdditionalCustomer"
-          component={AdditionalInfoCustomer}
-        />
-        <Stack.Screen
-          name="AdditionalEmployer"
-          component={AdditionalInfoEmployer}
-        />
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      });
+    };
+
+    checkLoginStatus();
+  }, []);
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {isLoggedIn ? (
+          <Stack.Screen name="Account" component={Account} />
+        ) : (
+          <Stack.Screen name="Login" component={LoginView} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
 export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
