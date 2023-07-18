@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { onAuthStateChanged } from "firebase/auth";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Selection from "./Views/Selection";
+import RegistrationView from "./Views/RegistrationView";
 import LoginView from "./Views/LoginView";
 import Account from "./Views/Account";
+import AdditionalInfoEmployee from "./Views/AdditionalInfoEmployee";
+import AdditionalInfoCustomer from "./Views/AdditionalInfoCustomer";
 
 const Stack = createNativeStackNavigator();
 
 function App() {
-  const [isLoggedIn, setIsLogged] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    const auth = getAuth();
     const checkLoginStatus = () => {
       onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -33,6 +37,26 @@ function App() {
         ) : (
           <Stack.Screen name="Login" component={LoginView} />
         )}
+        <Stack.Screen name="Registration" component={RegistrationView} />
+
+        <Stack.Screen name="Select" component={Selection} />
+
+        <Stack.Screen
+          name="AdditionalCustomer"
+          component={AdditionalInfoCustomer}
+        />
+        <Stack.Screen
+          name="AdditionalEmployer"
+          component={AdditionalInfoEmployee}
+        />
+
+        <Stack.Screen name="NestedLogin">
+          {() => (
+            <NestedStackNavigator>
+              <NestedStack.Screen name="Login" component={LoginView} />
+            </NestedStackNavigator>
+          )}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );

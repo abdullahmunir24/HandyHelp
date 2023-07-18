@@ -46,8 +46,10 @@ export default function Login() {
       alert("Please enter a valid email and password.");
       return;
     }
+
     try {
-      if (await checkUserExists()) {
+      const userExists = await checkUserExists();
+      if (userExists) {
         await signIn();
       } else {
         alert("User does not exist. Create a new account.");

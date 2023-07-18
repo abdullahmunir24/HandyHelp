@@ -1,13 +1,33 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { doc, updateDoc } from "firebase/firestore";
+import { FIRESTORE_DB } from "../FirebaseConfig";
 
-function Selection({ navigation }) {
+function Selection({ navigation, route }) {
+  const { UserId } = route.params;
+  console.log(route.params);
+
   const handleCleanerSelection = () => {
-    navigation.navigate("AdditionalEmployer");
+    saveOccupation("cleaner");
+    navigation.navigate("AdditionalEmployer", { userId: UserId });
   };
 
   const handleCustomerSelection = () => {
-    navigation.navigate("AdditionalCustomer");
+    saveOccupation("customer");
+    navigation.navigate("AdditionalCustomer", { userId: UserId });
+  };
+
+  const saveOccupation = (occupation) => {
+    console.log(UserId);
+    const userRef = doc(FIRESTORE_DB, "users", UserId);
+
+    updateDoc(userRef, { occupation })
+      .then(() => {
+        console.log("Occupation saved successfully!");
+      })
+      .catch((error) => {
+        console.log("Error saving occupation:", error);
+      });
   };
 
   return (

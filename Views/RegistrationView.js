@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Image, TouchableOpacity, Text, StyleSheet } from "react-native";
 import InputStuff from "../components/inputStuff";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { collection, addDoc, getDoc } from "firebase/firestore";
+import { FIREBASE_AUTH, FIREBASE_APP, FIRESTORE_DB } from "../FirebaseConfig";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -14,14 +15,14 @@ export default function Registration() {
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
   const [InputError, setInputError] = useState("");
-  const auth = FIREBASE_AUTH;
+  const [UserId, setUserId] = useState("");
   const navigation = useNavigation();
 
   useEffect(() => {
     if (password !== confirmpassword && confirmpassword !== "") {
       setInputError("Passwords do not match");
     } else if (password.length < 6 && password !== "") {
-      setInputError("Password must be at least 6  characters long");
+      setInputError("Password must be at least 6 characters long");
     } else if (firstname === "") {
       setInputError("Enter First Name");
     } else if (!email.includes("@") && email !== "") {
@@ -38,8 +39,8 @@ export default function Registration() {
       setInputError("Passwords do not match");
       return;
     }
-    if (password.length < 5) {
-      setInputError("Password must be at least 5 characters long");
+    if (password.length < 6) {
+      setInputError("Password must be at least 6 characters long");
       return;
     }
     if (firstname === "") {
@@ -57,18 +58,33 @@ export default function Registration() {
 
     try {
       const response = await createUserWithEmailAndPassword(
-        auth,
+        FIREBASE_AUTH,
         email,
         password
       );
-      console.log(response);
+      const user = response.user;
+
+      const usersCollection = collection(FIRESTORE_DB, "users");
+      const newDocRef = await addDoc(usersCollection, {
+        userId: user.uid,
+        firstName: firstname,
+        lastName: lastname,
+        email: email,
+      });
+
+      const newDocSnapshot = await getDoc(newDocRef);
+      const newDocId = newDocSnapshot.id;
+
+      setUserId(newDocId);
+      console.log(UserId);
+
       alert("Your account has been created");
       setEmail("");
       setFirstname("");
       setLastname("");
       setPassword("");
       setConfirmPassword("");
-      navigation.navigate("Select");
+      navigation.navigate("Select", { UserId: newDocId });
     } catch (error) {
       console.log(error);
       alert("Sign up failed: " + error.message);
@@ -80,7 +96,7 @@ export default function Registration() {
       email !== "" &&
       email.includes("@") &&
       password !== "" &&
-      password.length >= 5 &&
+      password.length >= 6 &&
       password === confirmpassword &&
       firstname !== "" &&
       lastname !== ""
@@ -160,7 +176,7 @@ export default function Registration() {
 
       <TouchableOpacity
         style={styles.signInButton}
-        onPress={() => navigation.navigate("SignIn")}
+        onPress={() => navigation.navigate("Login")}
       >
         <Text style={styles.signInButtonText}>
           If you already have an account, please sign in
@@ -226,7 +242,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textDecorationLine: "underline",
   },
-
   errorMessage: {
     color: "red",
     marginBottom: 10,

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import React, { useState } from "react";
+import { View, Text, Button, StyleSheet } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { format, differenceInYears } from "date-fns";
+import { updateDoc, doc } from "firebase/firestore";
+import { FIRESTORE_DB } from "../FirebaseConfig";
 
-function Birthday() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+function Birthday({ userId }) {
+  const [selectedDate, setSelectedDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleDateChange = (event, date) => {
@@ -12,9 +15,29 @@ function Birthday() {
     }
   };
 
-  const handleSave = () => {
-    // Handle saving the selected date
-    console.log('Selected Date:', selectedDate);
+  const handleSave = async () => {
+    try {
+      if (!selectedDate) {
+        return;
+      }
+
+      const userRef = doc(FIRESTORE_DB, "users", userId);
+
+      const formattedDate = format(selectedDate, "MM/dd/yyyy");
+      const age = differenceInYears(new Date(), selectedDate);
+
+      await updateDoc(userRef, {
+        birthday: formattedDate,
+        age: age,
+      });
+
+      updateAge(age);
+
+      console.log("Selected Date:", selectedDate);
+      setShowDatePicker(false);
+    } catch (error) {
+      console.log("Error saving birthday:", error);
+    }
   };
 
   return (
@@ -23,14 +46,16 @@ function Birthday() {
       <View style={styles.datePickerContainer}>
         {showDatePicker && (
           <DateTimePicker
-            value={selectedDate}
+            value={selectedDate || new Date()}
             mode="date"
             display="default"
             onChange={handleDateChange}
           />
         )}
         <Button
-          title={selectedDate.toDateString()}
+          title={
+            selectedDate ? format(selectedDate, "MM/dd/yyyy") : "Select Date"
+          }
           onPress={() => setShowDatePicker(!showDatePicker)}
           color="#007AFF"
         />
@@ -42,15 +67,16 @@ function Birthday() {
 
 const styles = StyleSheet.create({
   container: {
-   top:12,
+    marginTop: 12,
   },
   title: {
-    fontSize: 14,
+    fontSize: 18,
+    fontWeight: "bold",
     marginBottom: 8,
   },
   datePickerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
 });

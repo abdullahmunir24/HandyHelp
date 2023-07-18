@@ -4,7 +4,7 @@ import Birthday from "../components/Birthday";
 import UploadImage from "../components/UploadImage";
 import AdditionalInfo from "../components/AdditionalInfo";
 
-const AdditionalInfoEmployer = () => {
+const AdditionalInfoEmployee = () => {
   const [experience, setExperience] = useState("");
   const [username, setUsername] = useState("");
   const [info, setInfo] = useState("");
@@ -101,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AdditionalInfoEmployer;
+export default AdditionalInfoEmployee;
