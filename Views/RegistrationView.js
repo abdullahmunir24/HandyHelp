@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Image, TouchableOpacity, Text, StyleSheet } from "react-native";
 import InputStuff from "../components/inputStuff";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, addDoc, getDoc } from "firebase/firestore";
+import { collection, addDoc, getDoc, setDoc, doc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_APP, FIRESTORE_DB } from "../FirebaseConfig";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -64,18 +64,14 @@ export default function Registration() {
       );
       const user = response.user;
 
-      const usersCollection = collection(FIRESTORE_DB, "users");
-      const newDocRef = await addDoc(usersCollection, {
-        userId: user.uid,
+      const userRef = doc(FIRESTORE_DB, "users", user.uid);
+      await setDoc(userRef, {
         firstName: firstname,
         lastName: lastname,
         email: email,
       });
 
-      const newDocSnapshot = await getDoc(newDocRef);
-      const newDocId = newDocSnapshot.id;
-
-      setUserId(newDocId);
+      setUserId(user.uid);
       console.log(UserId);
 
       alert("Your account has been created");
@@ -84,7 +80,7 @@ export default function Registration() {
       setLastname("");
       setPassword("");
       setConfirmPassword("");
-      navigation.navigate("Select", { UserId: newDocId });
+      navigation.navigate("Select", { UserId: user.uid });
     } catch (error) {
       console.log(error);
       alert("Sign up failed: " + error.message);

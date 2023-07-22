@@ -4,15 +4,17 @@ import InputStuff from "../components/inputStuff";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
 import { AntDesign } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 export default function Login() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { userId } = route.params || { userId: "" };
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const auth = FIREBASE_AUTH;
-  const navigation = useNavigation();
 
   const signIn = async () => {
     try {
@@ -23,7 +25,7 @@ export default function Login() {
       alert("Logged in successfully");
       setEmail("");
       setPassword("");
-      navigation.navigate("Account");
+      navigation.navigate("Account", { userId: userId });
     } catch (error) {
       console.log(error);
       alert("Sign in failed: " + error.message);

@@ -8,6 +8,7 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import Birthday from "../components/Birthday";
 import UploadImage from "../components/UploadImage";
@@ -45,6 +46,10 @@ const AdditionalInfoCustomer = ({ navigation, route }) => {
       .catch((error) => {
         console.log("Error saving additional info:", error);
       });
+  };
+
+  const handleNextPress = () => {
+    navigation.navigate("Account");
   };
 
   return (
@@ -126,11 +131,8 @@ const AdditionalInfoCustomer = ({ navigation, route }) => {
 
           <AccessLocation userId={userId} />
 
-          <TouchableOpacity
-            style={styles.nextButton}
-            onPress={() => navigation.navigate("Account", { userId: userId })}
-          >
-            <Text style={styles.nextButtonText}>Next</Text>
+          <TouchableOpacity style={styles.saveButton} onPress={handleNextPress}>
+            <Text style={styles.saveButtonText}>Next</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

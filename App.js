@@ -8,6 +8,9 @@ import LoginView from "./Views/LoginView";
 import Account from "./Views/Account";
 import AdditionalInfoEmployee from "./Views/AdditionalInfoEmployee";
 import AdditionalInfoCustomer from "./Views/AdditionalInfoCustomer";
+import Chat from "./Views/Chat";
+import CustomerProfiles from "./Views/CustomerProfiles";
+import CustomerAccount from "./Views/CustomerAccount";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,7 +42,13 @@ function App() {
         )}
         <Stack.Screen name="Registration" component={RegistrationView} />
 
+        <Stack.Screen name="Customer Account" component={CustomerAccount} />
+
+        <Stack.Screen name="Chat" component={Chat} />
+
         <Stack.Screen name="Select" component={Selection} />
+
+        <Stack.Screen name="Customer Profiles" component={CustomerProfiles} />
 
         <Stack.Screen
           name="AdditionalCustomer"

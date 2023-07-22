@@ -8,7 +8,14 @@ import {
   Text,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { doc, setDoc } from "firebase/firestore";
+import { FIRESTORE_DB } from "../FirebaseConfig";
 
 const storage = getStorage();
 
@@ -41,7 +48,7 @@ export default function UploadImage({ userId }) {
       });
 
       if (!result.cancelled) {
-        setImage(result.uri);
+        setImage(result.assets[0].uri); // Update how you access the selected image URI
       }
     } else {
       requestLibraryPermission();
@@ -50,7 +57,6 @@ export default function UploadImage({ userId }) {
 
   const uploadPicture = async () => {
     if (uploading) {
-      // If an upload is already in progress, return
       return;
     }
 
@@ -61,7 +67,7 @@ export default function UploadImage({ userId }) {
       const blob = await response.blob();
       const imageName = `user_${userId}.jpg`;
       const storageRef = ref(storage, `images/${imageName}`);
-      const uploadTask = uploadBytes(storageRef, blob);
+      const uploadTask = uploadBytesResumable(storageRef, blob);
 
       uploadTask.on(
         "state_changed",
@@ -74,13 +80,29 @@ export default function UploadImage({ userId }) {
           console.log("Error uploading image:", error);
           setUploading(false);
         },
-        () => {
+        async () => {
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+            // Now, you can store the downloadURL in Firestore under the user's document
+            const userRef = doc(FIRESTORE_DB, "users", userId);
+            await setDoc(
+              userRef,
+              { profileImage: downloadURL },
+              { merge: true } // Use { merge: true } to merge the new data with existing data in the document
+            );
+
+            console.log("Image URL stored in Firestore!");
+          } catch (error) {
+            console.log("Error storing image URL in Firestore:", error);
+          }
+
           console.log("Image uploaded successfully!");
           setUploading(false);
         }
       );
     } catch (error) {
-      console.log("Error uploading image:", error);
+      console.log("canr store url in firestore:", error);
       setUploading(false);
     }
   };
