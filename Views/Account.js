@@ -149,6 +149,13 @@ function Account() {
       >
         <Text>Customer</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.nextButton}
+        onPress={() => navigation.navigate("Messages")}
+      >
+        <Text>Chats</Text>
+      </TouchableOpacity>
     </View>
   );
 }

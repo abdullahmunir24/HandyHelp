@@ -11,6 +11,7 @@ import AdditionalInfoCustomer from "./Views/AdditionalInfoCustomer";
 import Chat from "./Views/Chat";
 import CustomerProfiles from "./Views/CustomerProfiles";
 import CustomerAccount from "./Views/CustomerAccount";
+import ChatList from "./Views/ChatList";
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +46,8 @@ function App() {
         <Stack.Screen name="Customer Account" component={CustomerAccount} />
 
         <Stack.Screen name="Chat" component={Chat} />
+
+        <Stack.Screen name="Messages" component={ChatList} />
 
         <Stack.Screen name="Select" component={Selection} />
 
