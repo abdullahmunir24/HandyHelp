@@ -30,12 +30,12 @@ function inputStuff(props) {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 15,
+    marginBottom: 16,
   },
   input: {
-    fontSize: 14,
+    fontSize: 18,
   },
   divider: {
     borderBottomWidth: 1,

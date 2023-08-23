@@ -16,7 +16,6 @@ export default function ChatList() {
   const currentUserUid = getAuth()?.currentUser?.uid;
 
   useEffect(() => {
-    // Fetch the list of chat documents where the current user is participating
     const q = query(
       collection(FIRESTORE_DB, "chats"),
       where("participantsList_", "array-contains", {
