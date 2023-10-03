@@ -28,9 +28,11 @@ Running the App
 To run Handy Help on your phone, follow these steps:
 
 Clone this repository to your local machine:
+
 '''
 git clone https://github.com/your-username/handy-help.git
 '''
+
 Change directory to the app's root folder:
 '''
 cd handy-help
