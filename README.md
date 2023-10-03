@@ -21,10 +21,10 @@ Welcome to **Handy Help**, your go-to mobile app for connecting blue-collar work
 
 Before you can use Handy Help, you'll need to install Expo. If you don't have Expo installed, you can do so by running the following command in your terminal:
 
+
 ```
 npm install -g expo-cli
 ```
-
 
 Installation
 
@@ -53,6 +53,7 @@ Install the project's dependencies:
 npm install
 ```
 Start the Expo development server:
+
 ```
 expo start
 ```
