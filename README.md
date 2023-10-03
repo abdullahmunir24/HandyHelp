@@ -1,50 +1,61 @@
-Handy Help - Your Blue Collar Job Market in Pakistan
+# Handy Help - Your Blue Collar Job Market in Pakistan
 
-Welcome to Handy Help, your go-to mobile app for connecting blue-collar workers with job opportunities in Pakistan. This app is built using React Native, Firebase, and Expo, making it accessible and user-friendly. Whether you're a homeowner looking for reliable maids and household help or a job seeker in search of employment, Handy Help has you covered.
+Welcome to **Handy Help**, your go-to mobile app for connecting blue-collar workers with job opportunities in Pakistan. This app is built using **React Native**, **Firebase**, and **Expo**, making it accessible and user-friendly. Whether you're a homeowner looking for reliable maids and household help or a job seeker in search of employment, Handy Help has you covered.
 
-Table of Contents
+## Table of Contents
 
-Getting Started
-Installation
-Running the App
-App Overview
-Features
-User Registration
-Creating Profiles
-Browsing Listings
-Chat Feature
-Contact Information
+- [Getting Started](#getting-started)
+  - [Installation](#installation)
+  - [Running the App](#running-the-app)
+- [App Overview](#app-overview)
+- [Features](#features)
+  - [User Registration](#user-registration)
+  - [Creating Profiles](#creating-profiles)
+  - [Browsing Listings](#browsing-listings)
+  - [Chat Feature](#chat-feature)
+- [Contact Information](#contact-information)
+
+## Getting Started
+
+### Installation
+
+Before you can use Handy Help, you'll need to install Expo. If you don't have Expo installed, you can do so by running the following command in your terminal:
+
+```
+npm install -g expo-cli
+```
 
 
 Installation
 
 Before you can use Handy Help, you'll need to install Expo. If you don't have Expo installed, you can do so by running:
 
-'''
+```
 npm install -g expo-cli
-'''
+```
+
 Running the App
 
 To run Handy Help on your phone, follow these steps:
 
 Clone this repository to your local machine:
 
-'''
+```
 git clone https://github.com/your-username/handy-help.git
-'''
+```
 
 Change directory to the app's root folder:
-'''
+```
 cd handy-help
-'''
+```
 Install the project's dependencies:
-'''
+```
 npm install
-'''
+```
 Start the Expo development server:
-'''
+```
 expo start
-'''
+```
 Once the development server starts, you will see a QR code in the terminal.
 Download the Expo Go app on your Android or iOS device.
 Open Expo Go on your device, and scan the QR code displayed in your terminal to launch the app.
