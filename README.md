@@ -4,16 +4,16 @@ Welcome to **Handy Help**, your go-to mobile app for connecting blue-collar work
 
 ## Table of Contents
 
-- [Getting Started](#getting-started)
-  - [Installation](#installation)
-  - [Running the App](#running-the-app)
-- [App Overview](#app-overview)
-- [Features](#features)
-  - [User Registration](#user-registration)
-  - [Creating Profiles](#creating-profiles)
-  - [Browsing Listings](#browsing-listings)
-  - [Chat Feature](#chat-feature)
-- [Contact Information](#contact-information)
+- [Getting Started]
+  - [Installation]
+  - [Running the App]
+- [App Overview]
+- [Features]
+  - [User Registration]
+  - [Creating Profiles]
+  - [Browsing Listings]
+  - [Chat Feature]
+- [Contact Information]
 
 ## Getting Started
 
