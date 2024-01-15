@@ -15,17 +15,6 @@ Browsing Listings
 Chat Feature
 Contact Information
 
-## Getting Started
-
-### Installation
-
-Before you can use Handy Help, you'll need to install Expo. If you don't have Expo installed, you can do so by running the following command in your terminal:
-
-
-```
-npm install -g expo-cli
-```
-
 Installation
 
 Before you can use Handy Help, you'll need to install Expo. If you don't have Expo installed, you can do so by running:
@@ -41,12 +30,12 @@ To run Handy Help on your phone, follow these steps:
 Clone this repository to your local machine:
 
 ```
-git clone https://github.com/your-username/handy-help.git
+git clone https://github.com/your-username/HandyHelp.git
 ```
 
 Change directory to the app's root folder:
 ```
-cd handy-help
+cd HandyHelp
 ```
 Install the project's dependencies:
 ```
