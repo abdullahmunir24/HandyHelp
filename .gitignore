@@ -9,7 +9,6 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-FirebaseConfig.js
 babel.config.js
 app.json
 metro.config.js
