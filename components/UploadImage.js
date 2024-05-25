@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Text,
+  TouchableOpacity,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {
@@ -16,6 +17,7 @@ import {
 } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import { FIRESTORE_DB } from "../FirebaseConfig";
+import { ProgressBar } from "react-native-paper";
 
 const storage = getStorage();
 
@@ -102,28 +104,43 @@ export default function UploadImage({ userId }) {
         }
       );
     } catch (error) {
-      console.log("canr store url in firestore:", error);
+      console.log("Error uploading image:", error);
       setUploading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Button
-        title="Choose Picture"
+      <TouchableOpacity
+        style={[
+          styles.button,
+          !libraryPermission || uploading ? styles.buttonDisabled : {},
+        ]}
         onPress={pickImage}
-        disabled={!libraryPermission || uploading} // Disable when uploading is in progress
-      />
+        disabled={!libraryPermission || uploading}
+      >
+        <Text style={styles.buttonText}>Choose Picture</Text>
+      </TouchableOpacity>
       {image && <Image source={{ uri: image }} style={styles.image} />}
-      <Button
-        title="Upload Picture"
+      <TouchableOpacity
+        style={[
+          styles.button,
+          !image || uploading ? styles.buttonDisabled : {},
+        ]}
         onPress={uploadPicture}
-        disabled={!image || uploading} // Disable when no image selected or uploading is in progress
-      />
+        disabled={!image || uploading}
+      >
+        <Text style={styles.buttonText}>Upload Picture</Text>
+      </TouchableOpacity>
       {uploading && (
         <View style={styles.uploadingContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
           <Text style={styles.uploadingText}>Uploading...</Text>
+          <ProgressBar
+            progress={uploadProgress / 100}
+            color="#0000ff"
+            style={styles.progressBar}
+          />
           <Text style={styles.uploadProgress}>
             {Math.round(uploadProgress)}%
           </Text>
@@ -136,24 +153,56 @@ export default function UploadImage({ userId }) {
 
 const styles = StyleSheet.create({
   container: {
-    top: 50,
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: "#f5f5f5",
+  },
+  button: {
+    backgroundColor: "#1E90FF",
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonDisabled: {
+    backgroundColor: "#a9a9a9",
+  },
+  buttonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   image: {
     width: 200,
     height: 200,
+    borderRadius: 10,
     marginVertical: 20,
+    borderWidth: 2,
+    borderColor: "#1E90FF",
   },
   uploadingContainer: {
     marginTop: 20,
+    alignItems: "center",
   },
   uploadingText: {
     marginTop: 10,
     fontSize: 16,
+    color: "#0000ff",
+  },
+  progressBar: {
+    width: 200,
+    height: 10,
+    borderRadius: 5,
+    marginVertical: 10,
   },
   uploadProgress: {
     marginTop: 10,
     fontSize: 16,
     fontWeight: "bold",
+    color: "#0000ff",
   },
   errorText: {
     marginTop: 10,

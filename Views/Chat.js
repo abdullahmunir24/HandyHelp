@@ -9,6 +9,7 @@ import {
   query,
   onSnapshot,
   getDoc,
+  where,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -33,7 +34,6 @@ export default function Chat() {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       console.log("querySnapshot unsubscribe");
 
-      // Fetch the user's profile image from the "users" collection based on the user ID
       const userDocRef = doc(FIRESTORE_DB, "users", userId);
       getDoc(userDocRef)
         .then((userDoc) => {
@@ -43,7 +43,7 @@ export default function Chat() {
               _id: doc.id,
               createdAt: doc.data().createdAt.toDate(),
               text: doc.data().text,
-              profileImage: userData.profileImage || null, // Set the profile image URL for each message
+              profileImage: userData.profileImage || null,
               user: doc.data().user,
             }));
             setMessages(updatedMessages);
@@ -64,7 +64,6 @@ export default function Chat() {
 
   const fetchUserData = async () => {
     try {
-      // Fetch user data from the "users" collection based on the user ID
       const userDocRef = doc(FIRESTORE_DB, "users", userId);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
@@ -82,13 +81,12 @@ export default function Chat() {
 
   const fetchUserProfileImage = async () => {
     try {
-      // Fetch the user's profile image from the "users" collection based on the user ID
       const userDocRef = doc(FIRESTORE_DB, "users", userId);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
         const userData = userDoc.data();
         const profileImage = userData.profileImage || null;
-        setUserProfileImage(profileImage); // Set the profile image URL in the state
+        setUserProfileImage(profileImage);
       }
     } catch (error) {
       console.log("Error fetching user profile image:", error);
@@ -106,38 +104,34 @@ export default function Chat() {
       const chatId = constructChatId(senderId, userId);
 
       try {
-        // Check if the chat document already exists
         const chatDocRef = doc(FIRESTORE_DB, "chats", chatId);
         const chatDocSnap = await getDoc(chatDocRef);
 
-        // If the chat document doesn't exist, create a new one with the required fields
+        const participants = [userId, senderId];
+
         if (!chatDocSnap.exists()) {
           await setDoc(chatDocRef, {
-            participantsList_: [
-              { user: { _id: userId, name: user.name } },
-              { sender: { senderId: senderId } },
-            ],
+            participants,
             lastMessageCreatedAt: createdAt,
           });
         } else {
-          // If the chat document exists, update the lastMessageCreatedAt field to the timestamp of the latest message
-          await setDoc(chatDocRef, {
-            participantsList_: [
-              { user: { _id: userId, name: user.name } },
-              { sender: { senderId: senderId } },
-            ],
-            lastMessageCreatedAt: createdAt,
-          });
+          await setDoc(
+            chatDocRef,
+            {
+              participants,
+              lastMessageCreatedAt: createdAt,
+            },
+            { merge: true }
+          );
         }
 
-        // Create a new message document in the "messages" subcollection of the chat document
         await addDoc(collection(chatDocRef, "messages"), {
           _id,
           createdAt,
           text,
           user: {
-            _id: userId,
-            name: user.name,
+            _id: senderId,
+            name: getAuth()?.currentUser?.displayName || "Sender",
           },
         });
       } catch (error) {
@@ -148,30 +142,24 @@ export default function Chat() {
   );
 
   const constructChatId = (senderId, receiverId) => {
-    if (senderId < receiverId) {
-      return `${senderId}_${receiverId}`;
-    } else {
-      return `${receiverId}_${senderId}`;
-    }
+    return [senderId, receiverId].sort().join("_");
   };
 
   return (
     <>
       {user && (
-        <>
-          <View style={styles.userInfoContainer}>
-            <Image
-              source={
-                userProfileImage
-                  ? { uri: userProfileImage }
-                  : require("../assets/default_profile_image.webp")
-              }
-              style={styles.userProfileImage}
-            />
-            <Text style={styles.userName}>{user.name}</Text>
-            <Text style={styles.userUsername}>@{user.username}</Text>
-          </View>
-        </>
+        <View style={styles.userInfoContainer}>
+          <Image
+            source={
+              userProfileImage
+                ? { uri: userProfileImage }
+                : require("../assets/default_profile_image.webp")
+            }
+            style={styles.userProfileImage}
+          />
+          <Text style={styles.userName}>{user.name}</Text>
+          <Text style={styles.userUsername}>@{user.username}</Text>
+        </View>
       )}
 
       {lastMessage && (
@@ -183,13 +171,8 @@ export default function Chat() {
         showAvatarForEveryMessage={false}
         showUserAvatar={false}
         onSend={(messages) => onSend(messages)}
-        messagesContainerStyle={{
-          backgroundColor: "#fff",
-        }}
-        textInputStyle={{
-          backgroundColor: "#fff",
-          borderRadius: 20,
-        }}
+        messagesContainerStyle={{ backgroundColor: "#fff" }}
+        textInputStyle={{ backgroundColor: "#fff", borderRadius: 20 }}
         user={user}
       />
     </>

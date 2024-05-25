@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
-function CustomerAccount() {
+function CleanerAccount() {
   const navigation = useNavigation();
   const route = useRoute();
   const { userId, userData } = route.params || { userId: "", userData: null };
@@ -48,20 +48,22 @@ function CustomerAccount() {
         <Text style={styles.detailTitle}>Age</Text>
         <Text style={styles.detailText}>{user?.age || "Not filled"}</Text>
 
-        <Text style={styles.detailTitle}>Room</Text>
-        <Text style={styles.detailText}>{user?.room || "Not filled"}</Text>
+        <Text style={styles.detailTitle}>Years of Experience</Text>
+        <Text style={styles.detailText}>
+          {user?.experience || "Not filled"}
+        </Text>
 
-        <Text style={styles.detailTitle}>Family</Text>
-        <Text style={styles.detailText}>{user?.family || "Not filled"}</Text>
-
-        <Text style={styles.detailTitle}>Salary</Text>
+        <Text style={styles.detailTitle}>Expected Salary</Text>
         <Text style={styles.detailText}>{user?.salary || "Not filled"}</Text>
 
-        <Text style={styles.detailTitle}>Time</Text>
+        <Text style={styles.detailTitle}>Hours Wanted to Work</Text>
+        <Text style={styles.detailText}>{user?.work || "Not filled"}</Text>
+
+        <Text style={styles.detailTitle}>Time Slot</Text>
         <Text style={styles.detailText}>{user?.time || "Not filled"}</Text>
 
-        <Text style={styles.detailTitle}>Others</Text>
-        <Text style={styles.detailText}>{user?.others || "Not filled"}</Text>
+        <Text style={styles.detailTitle}>Bio</Text>
+        <Text style={styles.detailText}>{user?.info || "Not filled"}</Text>
       </View>
 
       <TouchableOpacity
@@ -135,4 +137,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomerAccount;
+export default CleanerAccount;

@@ -12,68 +12,70 @@ import { useNavigation } from "@react-navigation/native";
 import { FIRESTORE_DB } from "../FirebaseConfig";
 import { FontAwesome } from "@expo/vector-icons";
 
-function CustomerProfiles() {
+function CleanerProfiles() {
   const navigation = useNavigation();
-  const [customers, setCustomers] = useState([]);
+  const [cleaners, setCleaners] = useState([]);
   const [favorites, setFavorites] = useState({});
 
   useEffect(() => {
-    fetchCustomers();
+    fetchCleaners();
   }, []);
 
-  const fetchCustomers = async () => {
+  const fetchCleaners = async () => {
     try {
-      const customersRef = collection(FIRESTORE_DB, "users");
-      const customersSnapshot = await getDocs(customersRef);
+      const cleanersRef = collection(FIRESTORE_DB, "users");
+      const cleanersSnapshot = await getDocs(cleanersRef);
 
-      const fetchedCustomers = [];
-      for (const doc of customersSnapshot.docs) {
-        const customer = doc.data();
-        if (customer.occupation === "customer") {
-          fetchedCustomers.push({ ...customer, id: doc.id });
+      const fetchedCleaners = [];
+      for (const doc of cleanersSnapshot.docs) {
+        const cleaner = doc.data();
+        if (cleaner.occupation === "cleaner") {
+          fetchedCleaners.push({ ...cleaner, id: doc.id });
         }
       }
 
-      setCustomers(fetchedCustomers);
+      setCleaners(fetchedCleaners);
     } catch (error) {
-      console.log("Error fetching customers:", error);
+      console.log("Error fetching cleaners:", error);
     }
   };
 
-  const toggleFavorite = (customerId) => {
+  const toggleFavorite = (cleanerId) => {
     setFavorites((prevFavorites) => ({
       ...prevFavorites,
-      [customerId]: !prevFavorites[customerId],
+      [cleanerId]: !prevFavorites[cleanerId],
     }));
   };
 
-  const renderCustomerCard = ({ item }) => (
+  const renderCleanerCard = ({ item }) => (
     <TouchableOpacity
-      style={styles.customerCard}
+      style={styles.cleanerCard}
       onPress={() =>
-        navigation.navigate("Customer Account", {
+        navigation.navigate("Cleaner Account", {
           userId: item.id,
           userData: item,
         })
       }
     >
-      <View style={styles.customerImageContainer}>
+      <View style={styles.cleanerImageContainer}>
         <Image
           source={
             item.profileImage
               ? { uri: item.profileImage }
               : require("../assets/default_profile_image.webp")
           }
-          style={styles.customerImage}
+          style={styles.cleanerImage}
         />
       </View>
 
-      <View style={styles.customerInfo}>
-        <Text style={styles.customerName}>
+      <View style={styles.cleanerInfo}>
+        <Text style={styles.cleanerName}>
           {item.firstName + " " + item.lastName}
         </Text>
-        <Text style={styles.customerUsername}>{item.username}</Text>
-        <Text style={styles.customerOccupation}>{item.occupation}</Text>
+        <Text style={styles.cleanerUsername}>{item.username}</Text>
+        <Text style={styles.cleanerOccupation}>{item.occupation}</Text>
+        <Text style={styles.cleanerAge}>Age: {item.age || "N/A"}</Text>
+        <Text style={styles.cleanerBio}>{item.info || "No bio available"}</Text>
       </View>
 
       <TouchableOpacity
@@ -92,8 +94,8 @@ function CustomerProfiles() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={customers}
-        renderItem={renderCustomerCard}
+        data={cleaners}
+        renderItem={renderCleanerCard}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
       />
@@ -110,7 +112,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 10,
   },
-  customerCard: {
+  cleanerCard: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 10,
@@ -126,29 +128,37 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  customerImageContainer: {
+  cleanerImageContainer: {
     width: 80,
     height: 80,
     borderRadius: 40,
     overflow: "hidden",
   },
-  customerImage: {
+  cleanerImage: {
     width: "100%",
     height: "100%",
   },
-  customerInfo: {
+  cleanerInfo: {
     flex: 1,
     marginLeft: 15,
   },
-  customerName: {
+  cleanerName: {
     fontSize: 18,
     fontWeight: "bold",
   },
-  customerUsername: {
+  cleanerUsername: {
     fontSize: 16,
     color: "#888",
   },
-  customerOccupation: {
+  cleanerOccupation: {
+    fontSize: 14,
+    color: "#555",
+  },
+  cleanerAge: {
+    fontSize: 14,
+    color: "#555",
+  },
+  cleanerBio: {
     fontSize: 14,
     color: "#555",
   },
@@ -157,4 +167,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomerProfiles;
+export default CleanerProfiles;

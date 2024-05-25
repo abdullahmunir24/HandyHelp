@@ -58,11 +58,13 @@ const AdditionalInfoCustomer = ({ navigation, route }) => {
       style={styles.container}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Image
-          source={require("../assets/ubc.png")}
-          style={styles.image}
-          resizeMode="contain"
-        />
+        <View style={styles.imageContainer}>
+          <Image
+            source={require("../assets/HH.png")}
+            style={styles.image}
+            resizeMode="contain"
+          />
+        </View>
 
         <View style={styles.content}>
           <AdditionalInfo
@@ -121,18 +123,18 @@ const AdditionalInfoCustomer = ({ navigation, route }) => {
             <Text style={styles.saveButtonText}>Save Information</Text>
           </TouchableOpacity>
 
-          <View style={styles.birth}>
+          <View style={styles.additionalInfoContainer}>
             <UploadImage userId={userId} />
           </View>
 
-          <View style={styles.birth}>
+          <View style={styles.additionalInfoContainer}>
             <Birthday userId={userId} />
           </View>
 
           <AccessLocation userId={userId} />
 
-          <TouchableOpacity style={styles.saveButton} onPress={handleNextPress}>
-            <Text style={styles.saveButtonText}>Next</Text>
+          <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
+            <Text style={styles.nextButtonText}>Next</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -143,36 +145,50 @@ const AdditionalInfoCustomer = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f9f9f9",
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  imageContainer: {
+    alignItems: "center",
+    marginTop: 40,
+    marginBottom: 20,
   },
   image: {
     width: 130,
     height: 110,
-    marginTop: 20,
-    marginBottom: 40,
-    top: 20,
   },
   content: {
-    flex: 1,
     width: "100%",
-    paddingHorizontal: 20,
   },
-  birth: {
-    marginBottom: 50,
+  additionalInfoContainer: {
+    marginBottom: 20,
   },
   saveButton: {
-    backgroundColor: "black",
-    padding: 10,
+    backgroundColor: "#4CAF50",
+    padding: 15,
     borderRadius: 10,
     marginTop: 20,
-    alignSelf: "center",
+    alignItems: "center",
   },
   saveButtonText: {
-    color: "red",
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  nextButton: {
+    backgroundColor: "#1E90FF",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: "center",
+  },
+  nextButtonText: {
+    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },

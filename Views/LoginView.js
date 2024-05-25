@@ -68,7 +68,7 @@ export default function Login() {
       keyboardShouldPersistTaps="handled"
     >
       <Image
-        source={require("../assets/ubc.png")}
+        source={require("../assets/HH.png")}
         style={styles.image}
         resizeMode="contain"
       />
@@ -120,14 +120,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#f5f5f5", // Added background color
   },
   image: {
-    width: 130,
-    height: 110,
-    paddingVertical: 20,
+    width: 250, // Increased image size
+    height: 220, // Increased image size
+    marginTop: 40, // Added margin for better spacing
   },
   formContainer: {
-    marginTop: 80,
+    marginTop: 50,
+    padding: 20, // Added padding
+    backgroundColor: "#fff", // Added background color
+    borderRadius: 10, // Added border radius
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   inputContainer: {
     marginBottom: 20,
@@ -136,8 +145,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "black",
-    paddingVertical: 10,
+    backgroundColor: "#007BFF", // Changed button color
+    paddingVertical: 12,
     borderRadius: 10,
   },
   disabledButton: {
@@ -145,11 +154,11 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: "bold",
-    color: "red",
+    color: "#fff", // Changed text color
   },
   buttonIcon: {
     marginLeft: 5,
-    color: "white",
+    color: "#fff", // Changed icon color
     fontSize: 20,
     fontWeight: "bold",
   },
@@ -159,9 +168,10 @@ const styles = StyleSheet.create({
   signUpButtonText: {
     textAlign: "center",
     textDecorationLine: "underline",
+    color: "#007BFF", // Changed text color
   },
   errorMessage: {
     color: "red",
-    marginTop: 10,
+    marginTop: 10, // Added margin for better spacing
   },
 });

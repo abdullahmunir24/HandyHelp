@@ -1,61 +1,101 @@
 import React, { useState, useEffect } from "react";
-import { View, FlatList, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import {
   collection,
   query,
   where,
-  getDocs,
   orderBy,
+  getDocs,
   limit,
+  doc,
+  getDoc,
 } from "firebase/firestore";
-import { FIRESTORE_DB } from "../FirebaseConfig";
 import { getAuth } from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
+import { FIRESTORE_DB } from "../FirebaseConfig";
 
 export default function ChatList() {
   const [chats, setChats] = useState([]);
   const currentUserUid = getAuth()?.currentUser?.uid;
+  const navigation = useNavigation();
 
   useEffect(() => {
-    const q = query(
-      collection(FIRESTORE_DB, "chats"),
-      where("participantsList_", "array-contains", {
-        user: { _id: currentUserUid },
-      }),
-      orderBy("lastMessageCreatedAt", "desc"),
-      limit(10)
-    );
+    if (!currentUserUid) {
+      console.log("No current user UID");
+      return;
+    }
+
+    console.log("Current User UID:", currentUserUid);
 
     const fetchChats = async () => {
       try {
+        const q = query(
+          collection(FIRESTORE_DB, "chats"),
+          where("participants", "array-contains", currentUserUid),
+          orderBy("lastMessageCreatedAt", "desc"),
+          limit(10)
+        );
+
         const querySnapshot = await getDocs(q);
+        console.log("Fetched chats:", querySnapshot.size);
 
-        // Process each chat document to extract the user's information
-        const chatList = querySnapshot.docs.map((doc) => {
-          const participantsList = doc.data().participantsList_;
+        if (querySnapshot.empty) {
+          console.log("No chats found");
+          setChats([]);
+          return;
+        }
 
-          // Filter out any sender objects from the participantsList_ array
-          const userParticipants = participantsList.filter(
-            (participant) => participant.user
-          );
+        const chatList = await Promise.all(
+          querySnapshot.docs.map(async (docSnapshot) => {
+            const data = docSnapshot.data();
+            console.log("Chat data:", data);
 
-          // Extract the user's information from the filtered array
-          const participants = userParticipants.map((participant) => ({
-            name: participant.user.name,
-            username: participant.user.username,
-          }));
+            const participants = data.participants || [];
+            const receiverUid = participants.find(
+              (uid) => uid !== currentUserUid
+            );
 
-          // Extract the last message and its creation timestamp
-          const lastMessage = doc.data().messages[0]; // Assuming the messages are ordered by createdAt in descending order
-          const lastMessageText = lastMessage?.text || "";
-          const lastMessageCreatedAt = lastMessage?.createdAt?.toDate() || null;
+            const userDoc = await getDoc(
+              doc(FIRESTORE_DB, "users", receiverUid)
+            );
+            const userData = userDoc.data();
+            const receiverName = userData
+              ? userData.firstName + " " + userData.lastName
+              : "Unknown";
 
-          return {
-            id: doc.id,
-            participants,
-            lastMessageText,
-            lastMessageCreatedAt,
-          };
-        });
+            const messagesCollection = collection(
+              FIRESTORE_DB,
+              "chats",
+              docSnapshot.id,
+              "messages"
+            );
+            const messagesQuery = query(
+              messagesCollection,
+              orderBy("createdAt", "desc"),
+              limit(1)
+            );
+            const messagesSnapshot = await getDocs(messagesQuery);
+            const lastMessage = messagesSnapshot.docs[0]?.data() || {};
+            const lastMessageText = lastMessage.text || "";
+            const lastMessageCreatedAt = lastMessage.createdAt
+              ? new Date(lastMessage.createdAt.toMillis())
+              : null;
+
+            return {
+              id: docSnapshot.id,
+              receiverUid,
+              receiverName,
+              lastMessageText,
+              lastMessageCreatedAt,
+            };
+          })
+        );
 
         setChats(chatList);
       } catch (error) {
@@ -67,23 +107,21 @@ export default function ChatList() {
   }, [currentUserUid]);
 
   const renderItem = ({ item }) => (
-    <View style={styles.chatItem}>
-      <Text style={styles.participants}>
-        {item.participants
-          .map(
-            (participant) => `${participant.name} (@${participant.username})`
-          )
-          .join(", ")}
-      </Text>
-      <Text style={styles.lastMessage}>
-        Last Message: {item.lastMessageText}
-      </Text>
-      {item.lastMessageCreatedAt && (
-        <Text style={styles.lastMessageTime}>
-          {item.lastMessageCreatedAt.toLocaleString()}
+    <TouchableOpacity
+      onPress={() => navigation.navigate("Chat", { userId: item.receiverUid })}
+    >
+      <View style={styles.chatItem}>
+        <Text style={styles.participants}>{item.receiverName}</Text>
+        <Text style={styles.lastMessage}>
+          Last Message: {item.lastMessageText}
         </Text>
-      )}
-    </View>
+        {item.lastMessageCreatedAt && (
+          <Text style={styles.lastMessageTime}>
+            {item.lastMessageCreatedAt.toLocaleString()}
+          </Text>
+        )}
+      </View>
+    </TouchableOpacity>
   );
 
   return (
