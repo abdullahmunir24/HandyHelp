@@ -105,7 +105,7 @@ export default function Registration() {
       keyboardShouldPersistTaps="handled"
     >
       <Image
-        source={require("../assets/HH.png")}
+        source={require("../assets/TidyLink.png")}
         style={styles.image}
         resizeMode="contain"
       />
@@ -188,18 +188,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5", // Added background color
+    backgroundColor: "#f5f5f5",
   },
   image: {
-    width: 250, // Increased image size
-    height: 220, // Increased image size
-    marginTop: 40, // Added margin for better spacing
+    width: 250,
+    height: 220,
+    marginTop: 40,
   },
   formContainer: {
     marginTop: 50,
-    padding: 20, // Added padding
-    backgroundColor: "#fff", // Added background color
-    borderRadius: 10, // Added border radius
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#007BFF", // Changed button color
+    backgroundColor: "#007BFF",
     paddingVertical: 12,
     borderRadius: 10,
   },
@@ -232,11 +232,11 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: "bold",
-    color: "#fff", // Changed text color
+    color: "#fff",
   },
   buttonIcon: {
     marginLeft: 5,
-    color: "#fff", // Changed icon color
+    color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
   },
@@ -246,10 +246,10 @@ const styles = StyleSheet.create({
   signInButtonText: {
     textAlign: "center",
     textDecorationLine: "underline",
-    color: "#007BFF", // Changed text color
+    color: "#007BFF",
   },
   errorMessage: {
     color: "red",
-    marginTop: 10, // Added margin for better spacing
+    marginTop: 10,
   },
 });

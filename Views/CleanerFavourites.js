@@ -19,49 +19,42 @@ import { useNavigation } from "@react-navigation/native";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../FirebaseConfig";
 import { FontAwesome } from "@expo/vector-icons";
 
-function CustomerProfiles() {
+function CleanerFavourites() {
   const navigation = useNavigation();
   const userId = FIREBASE_AUTH.currentUser?.uid;
-  const [customers, setCustomers] = useState([]);
   const [favorites, setFavorites] = useState({});
+  const [customers, setCustomers] = useState([]);
 
   useEffect(() => {
-    fetchCustomers();
     fetchFavorites();
   }, []);
-
-  const fetchCustomers = async () => {
-    try {
-      const customersRef = collection(FIRESTORE_DB, "users");
-      const customersSnapshot = await getDocs(customersRef);
-
-      const fetchedCustomers = [];
-      for (const doc of customersSnapshot.docs) {
-        const customer = doc.data();
-        if (customer.occupation === "customer") {
-          fetchedCustomers.push({ ...customer, id: doc.id });
-        }
-      }
-
-      setCustomers(fetchedCustomers);
-    } catch (error) {
-      console.log("Error fetching customers:", error);
-    }
-  };
 
   const fetchFavorites = async () => {
     try {
       const favoritesRef = collection(FIRESTORE_DB, "favorites");
       const favoritesSnapshot = await getDocs(favoritesRef);
-
+      const favoriteCustomerIds = [];
       const userFavorites = {};
+
       favoritesSnapshot.forEach((doc) => {
         const data = doc.data();
         if (data.cleanerId === userId) {
+          favoriteCustomerIds.push(data.customerId);
           userFavorites[data.customerId] = true;
         }
       });
 
+      const fetchedCustomers = [];
+      for (const customerId of favoriteCustomerIds) {
+        const customerDoc = await getDoc(
+          doc(FIRESTORE_DB, "users", customerId)
+        );
+        if (customerDoc.exists()) {
+          fetchedCustomers.push({ ...customerDoc.data(), id: customerDoc.id });
+        }
+      }
+
+      setCustomers(fetchedCustomers);
       setFavorites(userFavorites);
     } catch (error) {
       console.log("Error fetching favorites:", error);
@@ -200,4 +193,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomerProfiles;
+export default CleanerFavourites;

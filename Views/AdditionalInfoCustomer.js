@@ -60,7 +60,7 @@ const AdditionalInfoCustomer = ({ navigation, route }) => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.imageContainer}>
           <Image
-            source={require("../assets/HH.png")}
+            source={require("../assets/TidyLink.png")}
             style={styles.image}
             resizeMode="contain"
           />

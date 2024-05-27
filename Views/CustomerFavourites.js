@@ -19,70 +19,61 @@ import { useNavigation } from "@react-navigation/native";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../FirebaseConfig";
 import { FontAwesome } from "@expo/vector-icons";
 
-function CustomerProfiles() {
+function CustomerFavourites() {
   const navigation = useNavigation();
   const userId = FIREBASE_AUTH.currentUser?.uid;
-  const [customers, setCustomers] = useState([]);
   const [favorites, setFavorites] = useState({});
+  const [cleaners, setCleaners] = useState([]);
 
   useEffect(() => {
-    fetchCustomers();
     fetchFavorites();
   }, []);
-
-  const fetchCustomers = async () => {
-    try {
-      const customersRef = collection(FIRESTORE_DB, "users");
-      const customersSnapshot = await getDocs(customersRef);
-
-      const fetchedCustomers = [];
-      for (const doc of customersSnapshot.docs) {
-        const customer = doc.data();
-        if (customer.occupation === "customer") {
-          fetchedCustomers.push({ ...customer, id: doc.id });
-        }
-      }
-
-      setCustomers(fetchedCustomers);
-    } catch (error) {
-      console.log("Error fetching customers:", error);
-    }
-  };
 
   const fetchFavorites = async () => {
     try {
       const favoritesRef = collection(FIRESTORE_DB, "favorites");
       const favoritesSnapshot = await getDocs(favoritesRef);
-
+      const favoriteCleanerIds = [];
       const userFavorites = {};
+
       favoritesSnapshot.forEach((doc) => {
         const data = doc.data();
-        if (data.cleanerId === userId) {
-          userFavorites[data.customerId] = true;
+        if (data.userId === userId) {
+          favoriteCleanerIds.push(data.cleanerId);
+          userFavorites[data.cleanerId] = true;
         }
       });
 
+      const fetchedCleaners = [];
+      for (const cleanerId of favoriteCleanerIds) {
+        const cleanerDoc = await getDoc(doc(FIRESTORE_DB, "users", cleanerId));
+        if (cleanerDoc.exists()) {
+          fetchedCleaners.push({ ...cleanerDoc.data(), id: cleanerDoc.id });
+        }
+      }
+
+      setCleaners(fetchedCleaners);
       setFavorites(userFavorites);
     } catch (error) {
       console.log("Error fetching favorites:", error);
     }
   };
 
-  const toggleFavorite = async (customerId) => {
+  const toggleFavorite = async (cleanerId) => {
     const favoriteRef = doc(
       FIRESTORE_DB,
       "favorites",
-      `${userId}_${customerId}`
+      `${userId}_${cleanerId}`
     );
     try {
-      if (favorites[customerId]) {
+      if (favorites[cleanerId]) {
         await deleteDoc(favoriteRef);
       } else {
-        await setDoc(favoriteRef, { cleanerId: userId, customerId });
+        await setDoc(favoriteRef, { userId, cleanerId });
       }
       setFavorites((prevFavorites) => ({
         ...prevFavorites,
-        [customerId]: !prevFavorites[customerId],
+        [cleanerId]: !prevFavorites[cleanerId],
       }));
       fetchFavorites();
     } catch (error) {
@@ -90,33 +81,35 @@ function CustomerProfiles() {
     }
   };
 
-  const renderCustomerCard = ({ item }) => (
+  const renderCleanerCard = ({ item }) => (
     <TouchableOpacity
-      style={styles.customerCard}
+      style={styles.cleanerCard}
       onPress={() =>
-        navigation.navigate("Customer Account", {
+        navigation.navigate("Cleaner Account", {
           userId: item.id,
           userData: item,
         })
       }
     >
-      <View style={styles.customerImageContainer}>
+      <View style={styles.cleanerImageContainer}>
         <Image
           source={
             item.profileImage
               ? { uri: item.profileImage }
               : require("../assets/default_profile_image.webp")
           }
-          style={styles.customerImage}
+          style={styles.cleanerImage}
         />
       </View>
 
-      <View style={styles.customerInfo}>
-        <Text style={styles.customerName}>
+      <View style={styles.cleanerInfo}>
+        <Text style={styles.cleanerName}>
           {item.firstName + " " + item.lastName}
         </Text>
-        <Text style={styles.customerUsername}>{item.username}</Text>
-        <Text style={styles.customerOccupation}>{item.occupation}</Text>
+        <Text style={styles.cleanerUsername}>{item.username}</Text>
+        <Text style={styles.cleanerOccupation}>{item.occupation}</Text>
+        <Text style={styles.cleanerAge}>Age: {item.age || "N/A"}</Text>
+        <Text style={styles.cleanerBio}>{item.info || "No bio available"}</Text>
       </View>
 
       <TouchableOpacity
@@ -135,8 +128,8 @@ function CustomerProfiles() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={customers}
-        renderItem={renderCustomerCard}
+        data={cleaners}
+        renderItem={renderCleanerCard}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
       />
@@ -153,7 +146,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 10,
   },
-  customerCard: {
+  cleanerCard: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 10,
@@ -169,29 +162,37 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  customerImageContainer: {
+  cleanerImageContainer: {
     width: 80,
     height: 80,
     borderRadius: 40,
     overflow: "hidden",
   },
-  customerImage: {
+  cleanerImage: {
     width: "100%",
     height: "100%",
   },
-  customerInfo: {
+  cleanerInfo: {
     flex: 1,
     marginLeft: 15,
   },
-  customerName: {
+  cleanerName: {
     fontSize: 18,
     fontWeight: "bold",
   },
-  customerUsername: {
+  cleanerUsername: {
     fontSize: 16,
     color: "#888",
   },
-  customerOccupation: {
+  cleanerOccupation: {
+    fontSize: 14,
+    color: "#555",
+  },
+  cleanerAge: {
+    fontSize: 14,
+    color: "#555",
+  },
+  cleanerBio: {
     fontSize: 14,
     color: "#555",
   },
@@ -200,4 +201,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomerProfiles;
+export default CustomerFavourites;

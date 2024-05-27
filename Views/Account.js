@@ -17,6 +17,7 @@ function Account() {
   const navigation = useNavigation();
   const [currentUser, setCurrentUser] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [userId, setUserId] = useState(null); // State to store userId
 
   useFocusEffect(
     useCallback(() => {
@@ -30,6 +31,7 @@ function Account() {
       const userAuth = FIREBASE_AUTH.currentUser;
       if (userAuth) {
         const uid = userAuth.uid;
+        setUserId(uid); // Set userId state
         const userSnapshot = await getDoc(doc(FIRESTORE_DB, "users", uid));
         if (userSnapshot.exists()) {
           setCurrentUser(userSnapshot.data());
@@ -87,6 +89,14 @@ function Account() {
     }
   };
 
+  const navigateToFavorites = () => {
+    if (currentUser.occupation === "cleaner") {
+      navigation.navigate("CleanerFavourites", { userId });
+    } else {
+      navigation.navigate("CustomerFavourites", { userId });
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -106,16 +116,16 @@ function Account() {
       </View>
 
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionText}>Email</Text>
-        </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => navigation.navigate("Messages")}
         >
           <Text style={styles.actionText}>Chats</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={navigateToFavorites}
+        >
           <Text style={styles.actionText}>Favorite</Text>
         </TouchableOpacity>
       </View>
@@ -189,18 +199,21 @@ function Account() {
       </View>
 
       <View style={styles.profileButtons}>
-        <TouchableOpacity
-          style={styles.profileButton}
-          onPress={() => navigation.navigate("Cleaner Profiles")}
-        >
-          <Text style={styles.profileButtonText}>View Cleaners</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.profileButton}
-          onPress={() => navigation.navigate("Customer Profiles")}
-        >
-          <Text style={styles.profileButtonText}>View Customers</Text>
-        </TouchableOpacity>
+        {currentUser?.occupation === "cleaner" ? (
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => navigation.navigate("Customer Profiles")}
+          >
+            <Text style={styles.profileButtonText}>View Customers</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => navigation.navigate("Cleaner Profiles")}
+          >
+            <Text style={styles.profileButtonText}>View Cleaners</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.footer}>
@@ -253,65 +266,63 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     alignItems: "center",
-    backgroundColor: "#4A90E2",
+    justifyContent: "center",
     padding: 10,
-    borderRadius: 10,
+    backgroundColor: "#4A90E2",
+    borderRadius: 5,
   },
   actionText: {
     color: "#fff",
+    fontSize: 16,
   },
   details: {
     paddingHorizontal: 20,
   },
   detailTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     marginTop: 20,
   },
   detailText: {
     fontSize: 16,
-    color: "#333",
     marginTop: 5,
   },
   profileButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
     marginVertical: 20,
+    alignItems: "center",
   },
   profileButton: {
-    alignItems: "center",
     backgroundColor: "#4A90E2",
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 5,
-    flex: 1,
-    marginHorizontal: 10,
   },
   profileButtonText: {
     color: "#fff",
+    fontSize: 16,
   },
   footer: {
-    marginVertical: 20,
-    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 30,
   },
   deleteButton: {
-    marginVertical: 10,
+    backgroundColor: "#FF3B30",
     padding: 10,
-    backgroundColor: "red",
     borderRadius: 5,
   },
   deleteButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontSize: 16,
   },
   signOutButton: {
-    marginVertical: 10,
-    padding: 10,
     backgroundColor: "#4A90E2",
+    padding: 10,
     borderRadius: 5,
   },
   signOutButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 

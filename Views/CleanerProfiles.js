@@ -7,18 +7,26 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  doc,
+  setDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
-import { FIRESTORE_DB } from "../FirebaseConfig";
+import { FIRESTORE_DB, FIREBASE_AUTH } from "../FirebaseConfig"; // Ensure FIREBASE_AUTH is imported
 import { FontAwesome } from "@expo/vector-icons";
 
 function CleanerProfiles() {
   const navigation = useNavigation();
   const [cleaners, setCleaners] = useState([]);
   const [favorites, setFavorites] = useState({});
+  const userId = FIREBASE_AUTH.currentUser?.uid;
 
   useEffect(() => {
     fetchCleaners();
+    fetchFavorites();
   }, []);
 
   const fetchCleaners = async () => {
@@ -40,11 +48,44 @@ function CleanerProfiles() {
     }
   };
 
-  const toggleFavorite = (cleanerId) => {
-    setFavorites((prevFavorites) => ({
-      ...prevFavorites,
-      [cleanerId]: !prevFavorites[cleanerId],
-    }));
+  const fetchFavorites = async () => {
+    try {
+      const favoritesRef = collection(FIRESTORE_DB, "favorites");
+      const favoritesSnapshot = await getDocs(favoritesRef);
+
+      const userFavorites = {};
+      favoritesSnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.userId === userId) {
+          userFavorites[data.cleanerId] = true;
+        }
+      });
+
+      setFavorites(userFavorites);
+    } catch (error) {
+      console.log("Error fetching favorites:", error);
+    }
+  };
+
+  const toggleFavorite = async (cleanerId) => {
+    const favoriteRef = doc(
+      FIRESTORE_DB,
+      "favorites",
+      `${userId}_${cleanerId}`
+    );
+    try {
+      if (favorites[cleanerId]) {
+        await deleteDoc(favoriteRef);
+      } else {
+        await setDoc(favoriteRef, { userId, cleanerId });
+      }
+      setFavorites((prevFavorites) => ({
+        ...prevFavorites,
+        [cleanerId]: !prevFavorites[cleanerId],
+      }));
+    } catch (error) {
+      console.log("Error toggling favorite:", error);
+    }
   };
 
   const renderCleanerCard = ({ item }) => (

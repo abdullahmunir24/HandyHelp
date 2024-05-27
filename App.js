@@ -14,7 +14,8 @@ import CustomerAccount from "./Views/CustomerAccount";
 import CleanerProfiles from "./Views/CleanerProfiles";
 import CleanerAccount from "./Views/CleanerAcoount";
 import ChatList from "./Views/ChatList";
-
+import CustomerFavourites from "./Views/CustomerFavourites";
+import CleanerFavourites from "./Views/CleanerFavourites";
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -54,6 +55,14 @@ function App() {
             <Stack.Screen
               name="AdditionalEmployer"
               component={AdditionalInfoEmployee}
+            />
+            <Stack.Screen
+              name="CustomerFavourites"
+              component={CustomerFavourites}
+            />
+            <Stack.Screen
+              name="CleanerFavourites"
+              component={CleanerFavourites}
             />
           </>
         ) : (
